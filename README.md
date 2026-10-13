@@ -13,6 +13,13 @@ It's about 106,000 lines of Rust with no outside crates. Clipper, mapbox wagyu, 
 Voronoi builder, a small Python 3 interpreter (for Cura's post-processing scripts), PNG/JPEG
 decoding, zip and the HTTP server are all part of the code. Licensed AGPL-3.0, like CuraEngine.
 
+![Layer view of a sliced plate with tree support](docs/screenshots/preview.png)
+
+| | | |
+|---|---|---|
+| ![Custom settings](docs/screenshots/prepare-settings.png) | ![Post-processing scripts](docs/screenshots/post-processing.png) | ![Adding a printer](docs/screenshots/add-printer.png) |
+| All of Cura's settings, laid out the same way | Cura's post-processing scripts | Every printer Cura supports |
+
 ## Download
 
 Windows 10 and 11, 64-bit. Get the files from the
