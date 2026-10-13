@@ -1137,12 +1137,14 @@ pub mod crand {
     #[cfg(test)]
     mod tests {
         #[test]
-        fn matches_glibc_default_sequence() {
+        fn matches_c_library_default_sequence() {
             super::srand(1);
-            // First values of glibc rand() with the default seed.
-            assert_eq!(super::rand(), 1804289383);
-            assert_eq!(super::rand(), 846930886);
-            assert_eq!(super::rand(), 1681692777);
+            // First values of rand() with seed 1 in the emulated C library: the Windows build
+            // emulates the UCRT, the others glibc.
+            let expected: [i32; 3] = if crate::flavor::msvc() { [41, 18467, 6334] } else { [1804289383, 846930886, 1681692777] };
+            for e in expected {
+                assert_eq!(super::rand(), e);
+            }
         }
     }
 }
