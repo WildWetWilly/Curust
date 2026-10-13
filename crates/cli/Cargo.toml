@@ -1,0 +1,13 @@
+[package]
+name = "curust-engine-cli"
+description = "Command line front-end compatible with `CuraEngine slice`."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "curust-engine"
+path = "src/main.rs"
+
+[dependencies]
+curust-engine = { path = "../engine" }

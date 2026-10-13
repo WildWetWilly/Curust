@@ -1,0 +1,8 @@
+[package]
+name = "curust-settings"
+description = "Curust settings system: Cura profiles (machines, extruders, variants, materials, qualities, intents), container stacks and setting-formula evaluation, ported from Uranium/Cura 5.12."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]

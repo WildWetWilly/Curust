@@ -1,0 +1,9 @@
+[package]
+name = "clipper"
+description = "Rust port of Angus Johnson's Clipper 6.4.2 (ClipperLib) polygon clipping and offsetting library."
+version.workspace = true
+edition.workspace = true
+license = "BSL-1.0"
+
+[dependencies]
+cppstd = { path = "../cppstd" }

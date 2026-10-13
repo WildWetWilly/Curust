@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest something Curust should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like?
+      description: If Cura already does it, say how it works there.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?

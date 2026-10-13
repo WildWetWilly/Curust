@@ -1,0 +1,937 @@
+[
+ {
+  "name": "pp_pause_default",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PauseAtHeight",
+    {}
+   ]
+  ]
+ },
+ {
+  "name": "pp_pause_height",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PauseAtHeight",
+    {
+     "pause_at": "height",
+     "pause_height": "7.5",
+     "pause_method": "griffin",
+     "display_text": "Change color",
+     "standby_temperature": "180",
+     "retraction_amount": "2.5"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_pause_layer",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PauseAtHeight",
+    {
+     "pause_at": "layer_no",
+     "pause_layer": "10",
+     "pause_method": "marlin",
+     "head_park_enabled": "False",
+     "redo_layer": "True",
+     "beep_at_pause": "True",
+     "custom_gcode_before_pause": "M117 Pausing, G4 S2",
+     "custom_gcode_after_pause": "M117 Resumed"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_pause_reprap",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PauseAtHeight",
+    {
+     "pause_at": "height",
+     "pause_height": "4.1",
+     "pause_method": "reprap",
+     "standby_wait_for_temperature_enabled": "False",
+     "extrude_amount": "5"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_changeatz_height",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "ChangeAtZ",
+    {
+     "a_trigger": "height",
+     "b_targetZ": "5",
+     "e1_Change_speed": "True",
+     "e2_speed": "50",
+     "h1_Change_bedTemp": "True",
+     "h2_bedTemp": "50",
+     "i1_Change_extruderOne": "True",
+     "i2_extruderOne": "215",
+     "j1_Change_fanSpeed": "True",
+     "j2_fanSpeed": "40",
+     "caz_output_to_display": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_changeatz_layer",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "ChangeAtZ",
+    {
+     "a_trigger": "layer_no",
+     "b_targetL": "12",
+     "c_behavior": "single_layer",
+     "g1_Change_flowrate": "True",
+     "g2_flowrate": "90",
+     "f1_Change_printspeed": "True",
+     "f2_printspeed": "120",
+     "caz_change_retract": "True",
+     "caz_change_retractlength": "True",
+     "caz_retractlength": "3"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_tweakatz_layer",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "TweakAtZ",
+    {
+     "a_start_layer": "5",
+     "a_end_layer": "20",
+     "b_change_speed": "True",
+     "b_speed": "80",
+     "c_change_flowrate": "True",
+     "c_flowrate_t0": "95",
+     "d_change_bed_temp": "True",
+     "d_bedTemp": "55",
+     "f_change_extruder_temperature": "True",
+     "f_extruder_temperature_t0": "205"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_tweakatz_height",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "TweakAtZ",
+    {
+     "by_layer_or_height": "by_height",
+     "a_height_start": "3",
+     "a_height_end": "8",
+     "g_change_retract": "True",
+     "g_change_retract_speed": "True",
+     "g_retract_speed": "30",
+     "g_change_retract_amount": "True",
+     "g_retract_amount": "4",
+     "b_change_speed": "True",
+     "b_change_printspeed": "True",
+     "b_speed": "70"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_filament",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "FilamentChange",
+    {
+     "layer_number": "5,15",
+     "initial_retract": "20",
+     "later_retract": "250",
+     "x_position": "10",
+     "y_position": "20",
+     "z_position": "2",
+     "enable_before_macro": "True",
+     "enable_after_macro": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_filament_fw",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "FilamentChange",
+    {
+     "layer_number": "10",
+     "firmware_config": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_insert_every",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "InsertAtLayerChange",
+    {
+     "gcode_to_add": "M117 Hello,G4 S1",
+     "insert_frequency": "every_5th",
+     "start_layer": "2",
+     "end_layer": "30"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_insert_once",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "InsertAtLayerChange",
+    {
+     "insert_frequency": "once_only",
+     "single_end_layer": "12",
+     "gcode_to_add": "m300 s440 p200",
+     "convert_to_upper": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_search_literal",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "SearchAndReplace",
+    {
+     "search": "G0 F6000",
+     "replace": "G0 F3000"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_search_regex",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "SearchAndReplace",
+    {
+     "search": "G1 F(\\d+) X",
+     "replace": "G1 F\\1 ; feed\\nX",
+     "is_regex": "True",
+     "ignore_start": "False",
+     "ignore_end": "False"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_search_layers",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "SearchAndReplace",
+    {
+     "search": "F1200",
+     "replace": "F1100",
+     "enable_layer_search": "True",
+     "search_start": "3",
+     "search_end": "10",
+     "first_instance_only": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_timelapse",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "TimeLapse",
+    {
+     "head_park_x": "10",
+     "head_park_y": "200",
+     "zhop": "1.5",
+     "insert_frequency": "every_3rd",
+     "anti_shake_length": "200",
+     "ensure_final_image": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_retractcontinue",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "RetractContinue",
+    {
+     "extra_retraction_speed": "0.1"
+    }
+   ]
+  ],
+  "global": {
+   "retraction_hop_enabled": true
+  }
+ },
+ {
+  "name": "pp_zhop_range",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "ZHopOnTravel",
+    {
+     "start_layer": "2",
+     "end_layer": "40",
+     "hop_height": "0.8",
+     "min_travel_dist": "5",
+     "add_retract": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_zhop_list",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "ZHopOnTravel",
+    {
+     "list_or_range": "list_of_layers",
+     "layers_of_interest": "3,7,11",
+     "min_travel_dist": "3"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_stretch_tube",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/tube.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "Stretch",
+    {
+     "wc_stretch": "0.2",
+     "pw_stretch": "0.15"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_stretch_star",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/twisted_star.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "Stretch",
+    {}
+   ]
+  ]
+ },
+ {
+  "name": "pp_cooling_layer",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "AddCoolingProfile",
+    {
+     "layer_fan_1": "1/0",
+     "layer_fan_2": "3/50",
+     "layer_fan_3": "10/100"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_cooling_feature",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "AddCoolingProfile",
+    {
+     "fan_layer_or_feature": "by_feature",
+     "feature_fan_start_layer": "2",
+     "feature_fan_end_layer": "50",
+     "feature_fan_feature_final": "20"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_lcd_progress",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "DisplayInfoOnLCD",
+    {
+     "display_option": "display_progress",
+     "add_m73_line": "True",
+     "add_m73_percent": "True",
+     "add_m73_time": "True",
+     "enable_end_message": "False"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_lcd_filename",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "DisplayInfoOnLCD",
+    {
+     "display_option": "filename_layer",
+     "file_name": "test",
+     "format_option": "True",
+     "enable_end_message": "False"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_limit_accel",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "LimitXYAccelJerk",
+    {
+     "type_of_change": "gradual_change",
+     "jerk_enable": "True",
+     "x_accel_limit": "400",
+     "y_accel_limit": "300",
+     "gradient_start_layer": "2",
+     "gradient_end_layer": "60"
+    }
+   ]
+  ],
+  "global": {
+   "acceleration_enabled": true,
+   "jerk_enabled": true
+  }
+ },
+ {
+  "name": "pp_purge",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PurgeLinesAndUnload",
+    {
+     "add_purge_lines": "True",
+     "purge_line_location": "left",
+     "enable_unload": "True",
+     "move_to_start": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_probe",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "UsePreviousProbeMeasurements",
+    {
+     "use_previous_measurements": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_anneal",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "AnnealingOrDrying",
+    {
+     "wait_time": "0.5",
+     "lowest_temp": "35",
+     "time_span": "1.5",
+     "park_head": "True",
+     "add_messages": "True"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_dry",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "AnnealingOrDrying",
+    {
+     "cycle_type": "dry_cycle",
+     "dry_time": "2",
+     "pause_cmd": "M0"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_colormix",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "ColorMix 2-1",
+    {
+     "units_of_measurement": "layer",
+     "start_height": "5",
+     "behavior": "blend_value",
+     "finish_height": "30",
+     "mix_start": "80",
+     "mix_finish": "20"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_chain",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "PauseAtHeight",
+    {
+     "pause_layer": "8"
+    }
+   ],
+   [
+    "SearchAndReplace",
+    {
+     "search": "M107",
+     "replace": "M106 S0"
+    }
+   ],
+   [
+    "InsertAtLayerChange",
+    {
+     "gcode_to_add": "G4 P100",
+     "insert_frequency": "every_10th"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_deprecated",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "DisplayProgressOnLCD",
+    {}
+   ],
+   [
+    "DisplayFilenameAndLayerOnLCD",
+    {}
+   ]
+  ]
+ },
+ {
+  "name": "pp_stretch_cube",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "Stretch",
+    {
+     "wc_stretch": "0.2",
+     "pw_stretch": "0.15"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "pp_stretch_sphere",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/sphere.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "Stretch",
+    {}
+   ]
+  ]
+ },
+ {
+  "name": "pp_thumbnail",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "add_scripts": [
+   [
+    "CreateThumbnail",
+    {
+     "width": "48",
+     "height": "48"
+    }
+   ]
+  ]
+ },
+ {
+  "name": "base_tube",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/tube.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "base_star",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/twisted_star.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "base_sphere",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/sphere.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ }
+]

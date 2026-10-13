@@ -1,0 +1,68 @@
+[
+ {
+  "name": "profile_ender",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "global": {
+   "adhesion_type": "brim",
+   "infill_sparse_density": 35
+  },
+  "extruders": {
+   "0": {
+    "user": {
+     "wall_line_count": 3,
+     "speed_print": 45
+    }
+   }
+  },
+  "custom_profile": "My Strong Profile"
+ },
+ {
+  "name": "profile_s5_intent",
+  "machine": "ultimaker_s5",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "intent": "engineering",
+  "extruders": {
+   "0": {
+    "user": {
+     "infill_sparse_density": 40
+    }
+   }
+  },
+  "custom_profile": "Engineering 40"
+ },
+ {
+  "name": "profile_um2_draft",
+  "machine": "ultimaker2_plus",
+  "quality_type": "fast",
+  "models": [
+   {
+    "file": "tests/models/overhang_t.stl",
+    "position": [
+     5,
+     5
+    ]
+   }
+  ],
+  "global": {
+   "support_enable": true
+  },
+  "custom_profile": "Fast support"
+ }
+]

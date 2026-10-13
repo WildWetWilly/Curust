@@ -1,0 +1,11 @@
+[package]
+name = "curust-installer"
+description = "Windows installer for Curust (all users, shortcuts, file associations, uninstaller)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[[bin]]
+name = "curust-installer"
+path = "src/main.rs"

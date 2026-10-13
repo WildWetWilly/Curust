@@ -1,0 +1,12 @@
+[
+  {"name": "blocker_basic", "machine": "creality_ender3",
+   "global": {"support_enable": true},
+   "models": [{"file": "tests/models/overhang_t.stl", "position": [0, 0], "support_blockers": [[15.0, 5.0, 0.0]]}]},
+  {"name": "blocker_tree_two", "machine": "creality_ender3",
+   "global": {"support_enable": true, "support_structure": "tree"},
+   "models": [{"file": "tests/models/overhang_t.stl", "position": [25, -10], "support_blockers": [[40.0, 5.0, 10.0], [10.0, 5.0, 10.0]]}]},
+  {"name": "blocker_one_at_a_time", "machine": "creality_ender3",
+   "global": {"support_enable": true, "print_sequence": "one_at_a_time"},
+   "models": [{"file": "tests/models/overhang_t.stl", "position": [-40, 0], "support_blockers": [[-25.0, 5.0, 0.0]]},
+              {"file": "tests/models/overhang_t.stl", "position": [40, 0]}]}
+]

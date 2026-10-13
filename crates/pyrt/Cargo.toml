@@ -1,0 +1,11 @@
+[package]
+name = "curust-pyrt"
+description = "A small Python 3 interpreter for running Cura's post-processing scripts."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]

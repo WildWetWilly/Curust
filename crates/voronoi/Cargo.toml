@@ -1,0 +1,9 @@
+[package]
+name = "voronoi"
+description = "Rust port of the Boost.Polygon Voronoi diagram builder (segments and points, integer input)."
+version.workspace = true
+edition.workspace = true
+license = "BSL-1.0"
+
+[dependencies]
+cppstd = { path = "../cppstd" }

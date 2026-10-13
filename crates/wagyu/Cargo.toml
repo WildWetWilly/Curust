@@ -1,0 +1,9 @@
+[package]
+name = "wagyu"
+description = "Rust port of mapbox/wagyu 0.5.0 polygon clipping (used by CuraEngine to remove near self-intersections)."
+version.workspace = true
+edition.workspace = true
+license = "ISC"
+
+[dependencies]
+cppstd = { path = "../cppstd" }

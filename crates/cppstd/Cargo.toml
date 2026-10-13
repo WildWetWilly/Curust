@@ -1,0 +1,8 @@
+[package]
+name = "cppstd"
+description = "Deterministic re-implementations of libstdc++ algorithms (std::sort, heaps, ...) so ported C++ code produces identical orderings."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]

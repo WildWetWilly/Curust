@@ -1,0 +1,317 @@
+# name | models | settings
+# --- support
+sup_ot            | overhang_t.stl     | support_enable=true
+sup_torus         | torus_standing.stl | support_enable=true
+sup_sphere        | sphere.stl         | support_enable=true
+sup_every_ot      | overhang_t.stl     | support_enable=true support_type=everywhere
+sup_iface_ot      | overhang_t.stl     | support_enable=true support_interface_enable=true support_roof_enable=true support_bottom_enable=true
+sup_iface_torus   | torus_standing.stl | support_enable=true support_interface_enable=true support_roof_enable=true support_bottom_enable=true
+sup_grid_ot       | overhang_t.stl     | support_enable=true support_pattern=grid
+sup_zigzag_ot     | overhang_t.stl     | support_enable=true support_pattern=zigzag
+sup_lines_ot      | overhang_t.stl     | support_enable=true support_pattern=lines
+sup_tri_ot        | overhang_t.stl     | support_enable=true support_pattern=triangles
+sup_conc_ot       | overhang_t.stl     | support_enable=true support_pattern=concentric
+sup_gyroid_ot     | overhang_t.stl     | support_enable=true support_pattern=gyroid
+sup_brim_ot       | overhang_t.stl     | support_enable=true support_brim_enable=true adhesion_type=none
+sup_walls_ot      | overhang_t.stl     | support_enable=true support_wall_count=1
+sup_roofconc_ot   | overhang_t.stl     | support_enable=true support_interface_enable=true support_roof_enable=true support_roof_pattern=concentric
+sup_roofgrid_ot   | overhang_t.stl     | support_enable=true support_interface_enable=true support_roof_enable=true support_roof_pattern=grid
+sup_skip_ot       | overhang_t.stl     | support_enable=true support_infill_rate=0
+sup_gradual_ot    | overhang_t.stl     | support_enable=true gradual_support_infill_steps=2
+# --- adhesion
+brim_cube         | cube20.stl         | adhesion_type=brim
+brim_torus        | torus_flat.stl     | adhesion_type=brim
+brim_in_tube      | tube.stl           | adhesion_type=brim brim_location=everywhere
+raft_cube         | cube20.stl         | adhesion_type=raft
+raft_ot           | overhang_t.stl     | adhesion_type=raft support_enable=true
+none_cube         | cube20.stl         | adhesion_type=none
+skirt3_cube       | cube20.stl         | adhesion_type=skirt skirt_line_count=3
+# --- infill patterns
+inf_grid          | cube20.stl         | infill_pattern=grid
+inf_lines         | cube20.stl         | infill_pattern=lines
+inf_tri           | cube20.stl         | infill_pattern=triangles
+inf_trihex        | cube20.stl         | infill_pattern=trihexagon
+inf_tetra         | cube20.stl         | infill_pattern=tetrahedral
+inf_qcubic        | cube20.stl         | infill_pattern=quarter_cubic
+inf_conc          | cube20.stl         | infill_pattern=concentric
+inf_zigzag        | cube20.stl         | infill_pattern=zigzag
+inf_gyroid        | sphere.stl         | infill_pattern=gyroid
+inf_honey         | cube20.stl         | infill_pattern=honeycomb
+inf_octagon       | cube20.stl         | infill_pattern=octagon
+inf_lines_conn    | cube20.stl         | infill_pattern=lines zig_zaggify_infill=true
+inf_grid_conn     | sphere.stl         | infill_pattern=grid zig_zaggify_infill=true
+inf_tri_conn      | sphere.stl         | infill_pattern=triangles zig_zaggify_infill=true connect_infill_polygons=true
+inf_0             | cube20.stl         | infill_sparse_density=0
+inf_100           | cube20.stl         | infill_sparse_density=100
+inf_gradual       | sphere.stl         | gradual_infill_steps=2
+inf_thick         | cube20.stl         | infill_sparse_thickness=0.3
+inf_walls         | cube20.stl         | infill_wall_line_count=1
+inf_mult          | cube20.stl         | infill_multiplier=2 infill_pattern=lines
+inf_offset        | cube20.stl         | infill_offset_x=3 infill_offset_y=2 infill_randomize_start_location=false
+inf_before_walls  | cube20.stl         | infill_before_walls=false
+inf_supp          | sphere.stl         | infill_support_enabled=true
+# --- skin
+tb_conc           | cube20.stl         | top_bottom_pattern=concentric top_bottom_pattern_0=concentric
+tb_zigzag         | cube20.stl         | top_bottom_pattern=zigzag top_bottom_pattern_0=zigzag
+tb_mono           | sphere.stl         | skin_monotonic=true
+roof2             | sphere.stl         | roofing_layer_count=2
+roof2_mono        | sphere.stl         | roofing_layer_count=2 roofing_monotonic=true
+floor2            | torus_standing.stl | flooring_layer_count=2
+ironing           | cube20.stl         | ironing_enabled=true
+ironing_conc      | sphere.stl         | ironing_enabled=true ironing_pattern=concentric ironing_only_highest_layer=false
+ironing_mono      | open_box.stl       | ironing_enabled=true ironing_monotonic=true
+bridge_ot         | overhang_t.stl     | bridge_settings_enabled=true
+bridge_more_ot    | overhang_t.stl     | bridge_settings_enabled=true bridge_enable_more_layers=true
+bridge_torus      | torus_standing.stl | bridge_settings_enabled=true
+# --- walls/seam
+outer_first       | cube20.stl         | inset_direction=outside_in
+z_shortest        | twisted_star.stl   | z_seam_type=shortest
+z_sharp           | twisted_star.stl   | z_seam_type=sharpest_corner z_seam_corner=z_seam_corner_any
+z_sharp_w         | twisted_star.stl   | z_seam_type=sharpest_corner z_seam_corner=z_seam_corner_weighted
+z_random          | twisted_star.stl   | z_seam_type=random
+z_back            | twisted_star.stl   | z_seam_type=back z_seam_x=10 z_seam_y=200
+scarf             | twisted_star.stl   | scarf_joint_seam_length=3
+scarf_speed       | tube.stl           | scarf_joint_seam_length=2 scarf_joint_seam_start_height_ratio=50 wall_0_start_speed_ratio=50 wall_0_end_speed_ratio=50
+wall_wipe         | cube20.stl         | wall_0_wipe_dist=0.5
+walls1            | sphere.stl         | wall_line_count=1
+walls4_alt        | cube20.stl         | wall_line_count=4 alternate_extra_perimeter=true
+thin_walls        | thin_walls.stl     | fill_outline_gaps=true
+small_feat        | thin_walls.stl     | small_feature_max_length=20
+# --- travel / retraction
+comb_off          | overlap_boxes.stl  | retraction_combing=off
+comb_all          | overlap_boxes.stl  | retraction_combing=all
+comb_noskin       | sphere.stl         | retraction_combing=noskin
+comb_infill       | sphere.stl         | retraction_combing=infill
+comb_noouter      | sphere.stl         | retraction_combing=no_outer_surfaces
+hop               | overlap_boxes.stl  | retraction_hop_enabled=true
+hop_only          | overlap_boxes.stl  | retraction_hop_enabled=true retraction_hop_only_when_collides=true
+no_avoid          | overlap_boxes.stl  | travel_avoid_other_parts=false
+coast             | cube20.stl         | coasting_enable=true
+retract_min       | sphere.stl         | retraction_min_travel=0.1 retraction_count_max=5
+wipe_retract      | cube20.stl         | wipe_retraction_enable=true
+infill_wipe       | cube20.stl         | infill_wipe_dist=0.5
+start_same        | overlap_boxes.stl  | start_layers_at_same_position=true
+# --- cooling / speed
+cool_long         | sphere.stl         | cool_min_layer_time=30
+cool_lift         | sphere.stl         | cool_min_layer_time=30 cool_lift_head=true
+fan_off           | cube20.stl         | cool_fan_enabled=false
+accel_jerk        | sphere.stl         | acceleration_enabled=true jerk_enabled=true
+eq_flow           | sphere.stl         | speed_equalize_flow_width_factor=110
+slow_layers       | cube20.stl         | speed_slowdown_layers=5
+# --- modes
+spiral_tube       | tube.stl           | magic_spiralize=true
+spiral_sphere     | sphere.stl         | magic_spiralize=true
+spiral_smooth     | tube.stl           | magic_spiralize=true smooth_spiralized_contours=false
+surface           | open_box.stl       | magic_mesh_surface_mode=surface
+surface_both      | open_box.stl       | magic_mesh_surface_mode=both
+adaptive          | sphere.stl         | adaptive_layer_height_enabled=true
+multi             | cube20.stl sphere.stl | adhesion_type=skirt
+# --- flavors
+fl_griffin        | cube20.stl         | machine_gcode_flavor=Griffin
+fl_ulti           | cube20.stl         | machine_gcode_flavor=UltiGCode
+fl_reprap         | cube20.stl         | machine_gcode_flavor="RepRap (RepRap)"
+fl_vol            | cube20.stl         | machine_gcode_flavor="RepRap (Volumetric)"
+fl_makerbot       | cube20.stl         | machine_gcode_flavor=Makerbot
+fl_bfb            | cube20.stl         | machine_gcode_flavor=BFB
+fl_mach3          | cube20.stl         | machine_gcode_flavor=MACH3
+fl_repetier       | cube20.stl         | machine_gcode_flavor=Repetier
+fl_fwretract      | cube20.stl         | machine_firmware_retract=true
+# --- second batch: leaf settings (the resolved JSON already contains derived values)
+sup_noiface_ot    | overhang_t.stl     | support_enable=true support_interface_enable=false support_roof_enable=false support_bottom_enable=false
+sup_bp_torus      | torus_standing.stl | support_enable=true support_type=buildplate
+sup_bp_blob       | blob.stl           | support_enable=true support_type=buildplate
+sup_every_blob    | blob.stl           | support_enable=true
+sup_dense_ot      | overhang_t.stl     | support_enable=true support_line_distance=1.0
+sup_none_ot       | overhang_t.stl     | support_enable=true support_line_distance=0
+sup_stair_torus   | torus_standing.stl | support_enable=true support_bottom_stair_step_height=0.3
+sup_roofoff_ot    | overhang_t.stl     | support_enable=true support_roof_offset=1
+sup_xyz_torus     | torus_standing.stl | support_enable=true support_xy_overrides_z=z_overrides_xy
+sup_conical_ot    | overhang_t.stl     | support_enable=true support_conical_enabled=true
+sup_towers_sphere | sphere.stl         | support_enable=true support_use_towers=true
+sup_raft_torus    | torus_standing.stl | support_enable=true adhesion_type=raft
+inf_0b            | cube20.stl         | infill_sparse_density=0 infill_line_distance=0
+inf_100b          | cube20.stl         | infill_sparse_density=100 infill_line_distance=0.4
+inf_100_sphere    | sphere.stl         | infill_sparse_density=100 infill_line_distance=0.4 infill_pattern=lines
+inf_cubic_blob    | blob.stl           | infill_pattern=cubic
+wipe_off          | cube20.stl         | wipe_retraction_enable=false
+skirt1            | overlap_boxes.stl  | skirt_line_count=1
+roof_conc         | sphere.stl         | roofing_layer_count=1 roofing_pattern=concentric
+brim_raft_blob    | blob.stl           | adhesion_type=raft
+brim_blob         | blob.stl           | adhesion_type=brim
+spiral_blob       | blob.stl           | magic_spiralize=true
+ironing_blob      | blob.stl           | ironing_enabled=true
+comb_off_blob     | blob.stl           | retraction_combing=off retraction_hop_enabled=true
+coast_sphere      | sphere.stl         | coasting_enable=true coasting_volume=0.1
+cool_lift_ts      | twisted_star.stl   | cool_min_layer_time=60 cool_lift_head=true
+walls6_blob       | blob.stl           | wall_line_count=6
+walls_outer_ts    | twisted_star.stl   | inset_direction=outside_in optimize_wall_printing_order=true
+walls_order_ts    | twisted_star.stl   | optimize_wall_printing_order=true
+travel_comp       | overlap_boxes.stl  | travel_compensate_overlapping_walls_enabled=false
+hole_comp         | tube.stl           | hole_xy_offset=0.2
+xy_offset         | cube20.stl         | xy_offset=-0.1 xy_offset_layer_0=-0.2
+min_layer_time_ot | overhang_t.stl     | cool_min_layer_time=20 cool_min_layer_time_overhang=30 support_enable=true
+bridge_wall_ot    | overhang_t.stl     | bridge_settings_enabled=true bridge_wall_coast=50 bridge_wall_min_length=1
+bridge_fan_ot     | overhang_t.stl     | bridge_settings_enabled=true bridge_fan_speed=50 bridge_fan_speed_2=30 bridge_fan_speed_3=20 bridge_enable_more_layers=true
+overhang_speed    | torus_standing.stl | wall_overhang_angle=30 wall_overhang_speed_factors=[50,25]
+seam_overhang     | torus_standing.stl | seam_overhang_angle=30
+small_hole        | tube.stl           | small_hole_max_size=50
+top_skin_exp      | sphere.stl         | top_skin_expand_distance=2 bottom_skin_expand_distance=2
+skin_edge_supp    | sphere.stl         | skin_edge_support_thickness=0.8
+extra_infill_wall | sphere.stl         | infill_wall_line_count=2 infill_pattern=grid
+skin_outline      | cube20.stl         | skin_outline_count=0
+ppr               | cube20.stl         | ppr_enable=true
+subdiv_cube    | cube20.stl         | infill_pattern=cubicsubdiv
+subdiv_sphere  | sphere.stl         | infill_pattern=cubicsubdiv
+subdiv_blob    | blob.stl           | infill_pattern=cubicsubdiv
+subdiv_torus   | torus_standing.stl | infill_pattern=cubicsubdiv sub_div_rad_add=0
+subdiv_dense   | sphere.stl         | infill_pattern=cubicsubdiv infill_line_distance=2 infill_angles=[30]
+subdiv_multi   | cube20.stl sphere.stl | infill_pattern=cubicsubdiv
+subdiv_zero    | cube20.stl         | infill_pattern=cubicsubdiv infill_line_distance=0
+light_cube     | cube20.stl         | infill_pattern=lightning
+light_sphere   | sphere.stl         | infill_pattern=lightning
+light_torus    | torus_standing.stl | infill_pattern=lightning
+light_blob     | blob.stl           | infill_pattern=lightning
+light_ts       | twisted_star.stl   | infill_pattern=lightning lightning_infill_prune_angle=20 lightning_infill_straightening_angle=20
+light_dense    | sphere.stl         | infill_pattern=lightning infill_line_distance=2 infill_wall_line_count=1
+cross_cube     | cube20.stl         | infill_pattern=cross
+cross_sphere   | sphere.stl         | infill_pattern=cross
+cross3d_sphere | sphere.stl         | infill_pattern=cross_3d
+cross3d_torus  | torus_standing.stl | infill_pattern=cross_3d
+cross3d_pocket | blob.stl           | infill_pattern=cross_3d cross_infill_pocket_size=4
+cross_zig      | sphere.stl         | infill_pattern=cross zig_zaggify_infill=true
+cross_dense    | cube20.stl         | infill_pattern=cross infill_line_distance=1.5
+cross_img_gray | cube20.stl         | infill_pattern=cross cross_infill_density_image={ROOT}/tests/images/density_gray.png
+cross_img_rgb  | sphere.stl         | infill_pattern=cross_3d cross_infill_density_image={ROOT}/tests/images/density_rgb.png
+sup_cross_ot   | overhang_t.stl     | support_enable=true support_pattern=cross
+cross_img_blob   | sphere.stl  | infill_pattern=cross infill_line_distance=1.5 cross_infill_density_image={ROOT}/tests/images/density_blob.png
+cross_img_pal    | sphere.stl  | infill_pattern=cross_3d infill_line_distance=1.5 cross_infill_density_image={ROOT}/tests/images/density_pal.png
+inwards_lines   | cube20.stl   | infill_pattern=lines infill_start_move_inwards_length=2 infill_end_move_inwards_length=2
+inwards_grid    | sphere.stl   | infill_pattern=grid infill_start_move_inwards_length=3
+inwards_end     | sphere.stl   | infill_pattern=triangles infill_end_move_inwards_length=1.5
+inwards_conc    | tube.stl     | infill_pattern=concentric infill_start_move_inwards_length=2 infill_end_move_inwards_length=1
+inwards_gyroid  | torus_standing.stl | infill_pattern=gyroid infill_start_move_inwards_length=2 infill_end_move_inwards_length=2
+inwards_zig     | blob.stl     | infill_pattern=zigzag infill_start_move_inwards_length=5 infill_end_move_inwards_length=5
+inwards_thick   | sphere.stl   | infill_pattern=lines infill_sparse_thickness=0.3 infill_start_move_inwards_length=2 infill_end_move_inwards_length=2
+gflow_cube     | cube20.stl         | gradual_flow_enabled=true
+gflow_sphere   | sphere.stl         | gradual_flow_enabled=true max_flow_acceleration=0.5 layer_0_max_flow_acceleration=0.2
+gflow_torus    | torus_standing.stl | gradual_flow_enabled=true max_flow_acceleration=2 gradual_flow_discretisation_step_size=0.1 support_enable=true
+gflow_blob     | blob.stl           | gradual_flow_enabled=true max_flow_acceleration=0.1 reset_flow_duration=0.5
+dual_two        | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual
+dual_pt         | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true
+dual_pt_inter   | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_mode=interleaved
+dual_pt_base    | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_brim_enable=true prime_tower_base_size=5 prime_tower_base_height=2
+dual_pt_raft    | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true adhesion_type=raft
+dual_overlap    | cube20.stl@0 sphere.stl@1 | @def=dual
+dual_ooze       | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual ooze_shield_enabled=true
+dual_pt_tall       | torus_flat.stl@0[mesh_position_x=-25] cube20.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true
+dual_pt_tall_inter | torus_flat.stl@0[mesh_position_x=-25] cube20.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_mode=interleaved
+dual_pt_wipe_off   | torus_flat.stl@0[mesh_position_x=-25] cube20.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_wipe_enabled=false
+dual_pt_sup        | overhang_t.stl@1[mesh_position_x=-15] sphere.stl@0[mesh_position_x=20] | @def=dual prime_tower_enable=true support_enable=true support_extruder_nr=1
+dual_pt_brim       | torus_flat.stl@0[mesh_position_x=-25] cube20.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true adhesion_type=brim
+dual_supext       | overhang_t.stl@0 | @def=dual prime_tower_enable=true support_enable=true support_extruder_nr=1 support_infill_extruder_nr=1 support_interface_extruder_nr=1 support_roof_extruder_nr=1 support_bottom_extruder_nr=1
+dual_supext_inter | overhang_t.stl@0 | @def=dual prime_tower_enable=true prime_tower_mode=interleaved support_enable=true support_extruder_nr=1 support_infill_extruder_nr=1 support_interface_extruder_nr=1 support_roof_extruder_nr=1 support_bottom_extruder_nr=1
+dual_supext_inter_torus | torus_standing.stl@0 | @def=dual prime_tower_enable=true prime_tower_mode=interleaved support_enable=true support_extruder_nr=1 support_infill_extruder_nr=1 support_interface_extruder_nr=1 support_roof_extruder_nr=1 support_bottom_extruder_nr=1
+dual_pt_normal        | cube20.stl@0[mesh_position_x=-15] sphere.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_mode=normal
+dual_pt_tall_normal   | torus_flat.stl@0[mesh_position_x=-25] cube20.stl@1[mesh_position_x=15] | @def=dual prime_tower_enable=true prime_tower_mode=normal
+dual_supext_normal    | overhang_t.stl@0 | @def=dual prime_tower_enable=true prime_tower_mode=normal support_enable=true support_extruder_nr=1 support_infill_extruder_nr=1 support_interface_extruder_nr=1 support_roof_extruder_nr=1 support_bottom_extruder_nr=1
+dual_normal_base      | torus_standing.stl@0 | @def=dual prime_tower_enable=true prime_tower_mode=normal prime_tower_brim_enable=true prime_tower_base_size=4 prime_tower_base_height=1.5 support_enable=true support_extruder_nr=1 support_infill_extruder_nr=1 support_interface_extruder_nr=1 support_roof_extruder_nr=1 support_bottom_extruder_nr=1
+il_overlap     | cube20.stl@0 sphere.stl@1 | @def=dual interlocking_enable=true
+il_side        | cube20.stl@0[mesh_position_x=-10] cube20.stl@1[mesh_position_x=10] | @def=dual interlocking_enable=true
+il_blob        | blob.stl@0 tube.stl@1 | @def=dual interlocking_enable=true interlocking_beam_width=1.2
+il_torus2      | torus_standing.stl@0 sphere.stl@1 | @def=dual interlocking_enable=true interlocking_orientation=45 interlocking_beam_layer_count=3
+il_ts          | twisted_star.stl@0 cube20.stl@1 | @def=dual interlocking_enable=true interlocking_boundary_avoidance=3
+# NOTE: interlocking with interlocking_boundary_avoidance=0, or a depth larger than the boundary avoidance,
+# crashes the reference (negative layer index UB in InterlockingGenerator); the port skips those cells.
+# --- tree support (reference patched for deterministic element ordering; CURA_HW_CONCURRENCY=2 by default)
+tree_ot             | overhang_t.stl     | support_enable=true support_structure=tree
+tree_torus          | torus_standing.stl | support_enable=true support_structure=tree
+tree_sphere         | sphere.stl         | support_enable=true support_structure=tree
+tree_blob           | blob.stl           | support_enable=true support_structure=tree
+tree_star           | twisted_star.stl   | support_enable=true support_structure=tree
+tree_openbox        | open_box.stl       | support_enable=true support_structure=tree
+tree_bp_ot          | overhang_t.stl     | support_enable=true support_structure=tree support_type=buildplate
+tree_bp_torus       | torus_standing.stl | support_enable=true support_structure=tree support_type=buildplate
+tree_prefbp_torus   | torus_standing.stl | support_enable=true support_structure=tree support_tree_rest_preference=buildplate
+tree_prefbp_blob    | blob.stl           | support_enable=true support_structure=tree support_tree_rest_preference=buildplate
+tree_noroof_ot      | overhang_t.stl     | support_enable=true support_structure=tree support_roof_enable=false support_interface_enable=false
+tree_noroof_torus   | torus_standing.stl | support_enable=true support_structure=tree support_roof_enable=false support_bottom_enable=false support_interface_enable=false
+tree_zxy_ot         | overhang_t.stl     | support_enable=true support_structure=tree support_xy_overrides_z=z_overrides_xy
+tree_zxy_torus      | torus_standing.stl | support_enable=true support_structure=tree support_xy_overrides_z=z_overrides_xy
+tree_zxy_bp_blob    | blob.stl           | support_enable=true support_structure=tree support_xy_overrides_z=z_overrides_xy support_type=buildplate
+tree_angle_ot       | overhang_t.stl     | support_enable=true support_structure=tree support_tree_angle=40 support_tree_angle_slow=30
+tree_angle85_ot     | overhang_t.stl     | support_enable=true support_structure=tree support_tree_angle=85
+tree_thin_torus     | torus_standing.stl | support_enable=true support_structure=tree support_tree_branch_diameter=2 support_tree_tip_diameter=0.4
+tree_fat_torus      | torus_standing.stl | support_enable=true support_structure=tree support_tree_branch_diameter=8 support_tree_tip_diameter=2 support_tree_bp_diameter=12
+tree_maxd_ot        | overhang_t.stl     | support_enable=true support_structure=tree support_tree_max_diameter=6
+tree_toprate_ot     | overhang_t.stl     | support_enable=true support_structure=tree support_tree_top_rate=10
+tree_diamang_ot     | overhang_t.stl     | support_enable=true support_structure=tree support_tree_branch_diameter_angle=0
+tree_nolimit_ot     | overhang_t.stl     | support_enable=true support_structure=tree support_tree_limit_branch_reach=false
+tree_reach_torus    | torus_standing.stl | support_enable=true support_structure=tree support_tree_branch_reach_limit=5
+tree_grid_ot        | overhang_t.stl     | support_enable=true support_structure=tree support_pattern=grid
+tree_tri_ot         | overhang_t.stl     | support_enable=true support_structure=tree support_pattern=triangles
+tree_lines_ot       | overhang_t.stl     | support_enable=true support_structure=tree support_pattern=lines
+tree_gyroid_torus   | torus_standing.stl | support_enable=true support_structure=tree support_pattern=gyroid
+tree_conc_ot        | overhang_t.stl     | support_enable=true support_structure=tree support_pattern=concentric
+tree_cross_ot       | overhang_t.stl     | support_enable=true support_structure=tree support_pattern=cross
+tree_walls_ot       | overhang_t.stl     | support_enable=true support_structure=tree support_wall_count=1
+tree_walls2_torus   | torus_standing.stl | support_enable=true support_structure=tree support_wall_count=2 support_roof_wall_count=1
+tree_roofconc_ot    | overhang_t.stl     | support_enable=true support_structure=tree support_roof_pattern=concentric
+tree_roofthick_ot   | overhang_t.stl     | support_enable=true support_structure=tree support_roof_height=1.0
+tree_ztop_frac_ot   | overhang_t.stl     | support_enable=true support_structure=tree support_top_distance=0.25
+tree_ztop_frac_fake | overhang_t.stl     | support_enable=true support_structure=tree support_top_distance=0.25 support_roof_enable=false support_interface_enable=false
+tree_zbot0_torus    | torus_standing.stl | support_enable=true support_structure=tree support_bottom_distance=0
+tree_xy_ot          | overhang_t.stl     | support_enable=true support_structure=tree support_xy_distance=1.5
+tree_minarea_ot     | overhang_t.stl     | support_enable=true support_structure=tree minimum_support_area=0 minimum_roof_area=0
+tree_mintomodel_torus | torus_standing.stl | support_enable=true support_structure=tree support_tree_min_height_to_model=0.5 support_tree_max_diameter_increase_by_merges_when_support_to_model=5
+tree_gaps_ot        | overhang_t.stl     | support_enable=true support_structure=tree fill_outline_gaps=true
+tree_lh02_torus     | torus_standing.stl | support_enable=true support_structure=tree layer_height=0.2
+tree_raft_ot        | overhang_t.stl     | support_enable=true support_structure=tree adhesion_type=raft
+tree_brim_torus     | torus_standing.stl | support_enable=true support_structure=tree adhesion_type=brim
+tree_two_models     | overhang_t.stl[mesh_position_x=-20] torus_standing.stl[mesh_position_x=25] | support_enable=true support_structure=tree
+tree_dual           | overhang_t.stl@0[mesh_position_x=-20] torus_standing.stl@1[mesh_position_x=25] | @def=dual support_enable=true support_structure=tree
+tree_dual_pt        | overhang_t.stl@0[mesh_position_x=-20] torus_standing.stl@1[mesh_position_x=25] | @def=dual support_enable=true support_structure=tree prime_tower_enable=true
+tree_prio_i_torus   | torus_standing.stl | support_enable=true support_structure=tree support_roof_height=2 support_xy_overrides_z=z_overrides_xy
+tree_prio_s_torus   | torus_standing.stl | support_enable=true support_structure=tree support_roof_height=2 support_xy_overrides_z=z_overrides_xy support_interface_priority=support_area_overwrite_interface_area
+tree_prio_il_torus  | torus_standing.stl | support_enable=true support_structure=tree support_roof_height=2 support_xy_overrides_z=z_overrides_xy support_interface_priority=interface_lines_overwrite_support_area
+tree_prio_sl_torus  | torus_standing.stl | support_enable=true support_structure=tree support_roof_height=2 support_xy_overrides_z=z_overrides_xy support_interface_priority=support_lines_overwrite_interface_area
+tree_prio_no_torus  | torus_standing.stl | support_enable=true support_structure=tree support_roof_height=2 support_xy_overrides_z=z_overrides_xy support_interface_priority=nothing
+tree_bigarea_torus  | torus_standing.stl | support_enable=true support_structure=tree minimum_support_area=20 minimum_roof_area=50
+tree_tipdiam_torus  | torus_standing.stl | support_enable=true support_structure=tree minimum_roof_area=1 support_tree_tip_diameter=4
+tree_stack          | cube20.stl sphere.stl[mesh_position_z=20] | support_enable=true support_structure=tree
+tree_stack_bottom   | cube20.stl sphere.stl[mesh_position_z=20] | support_enable=true support_structure=tree support_bottom_offset=0.5 support_bottom_height=1
+tree_stack_prefbp   | cube20.stl sphere.stl[mesh_position_z=20] | support_enable=true support_structure=tree support_tree_rest_preference=buildplate
+tree_stack_mintm    | cube20.stl sphere.stl[mesh_position_z=20] | support_enable=true support_structure=tree support_tree_min_height_to_model=0.5
+tree_stack_zxy      | cube20.stl sphere.stl[mesh_position_z=20] | support_enable=true support_structure=tree support_xy_overrides_z=z_overrides_xy
+tree_stack_blocker  | cube20.stl sphere.stl[mesh_position_z=20] cube20.stl[mesh_position_x=8,mesh_position_z=5,anti_overhang_mesh=true] | support_enable=true support_structure=tree
+tree_hw1_torus      | torus_standing.stl | support_enable=true support_structure=tree @hw=1
+tree_hw8_torus      | torus_standing.stl | support_enable=true support_structure=tree @hw=8
+# --- texture painting (multi-material splitter, painted seams); models in tests/models/painted
+paint_cube           | painted/cube_top.stl | @def=dual
+paint_cube_r05       | painted/cube_top.stl | @def=dual multi_material_paint_resolution=0.5 multi_material_paint_depth=2
+paint_cube_d1        | painted/cube_top.stl | @def=dual multi_material_paint_depth=1
+paint_cube_d10_r02   | painted/cube_top.stl | @def=dual multi_material_paint_depth=10 multi_material_paint_resolution=0.2
+paint_cube_e1        | painted/cube_top.stl@1 | @def=dual
+paint_cube_all1      | painted/cube_all1.stl | @def=dual
+paint_cube_none      | painted/cube_none.stl | @def=dual
+paint_cube_pt        | painted/cube_top.stl | @def=dual prime_tower_enable=true
+paint_sphere         | painted/sphere_stripe.stl | @def=dual
+paint_sphere_gamma   | painted/sphere_gamma.stl | @def=dual multi_material_paint_resolution=0.25
+paint_torus_multi    | painted/torus_multi.stl | @def=dual
+paint_torus_single   | painted/torus_multi.stl |
+paint_torus_gray     | painted/torus_gray.stl | @def=dual multi_material_paint_resolution=0.25
+paint_ot_ga_e1       | painted/ot_ga.stl@1 | @def=dual
+paint_two_meshes     | painted/cube_top.stl[mesh_position_x=-15] painted/sphere_stripe.stl[mesh_position_x=15] | @def=dual multi_material_paint_resolution=0.2
+paint_support        | painted/cube_top.stl painted/ot_ga.stl[mesh_position_x=25] | @def=dual support_enable=true multi_material_paint_resolution=0.3
+paint_seam_sphere    | painted/sphere_seam.stl |
+paint_seam_sharp     | painted/sphere_seam.stl | z_seam_type=sharpest_corner
+paint_seam_random    | painted/sphere_seam.stl | z_seam_type=random
+paint_seam_tube      | painted/tube_seam.stl |
+paint_seam_tube_back | painted/tube_seam.stl | z_seam_type=back
+paint_seam_surface   | painted/tube_seam.stl | magic_mesh_surface_mode=surface
+paint_seam_spiral    | painted/sphere_seam.stl | magic_spiralize=true
+# --- CommandLine -r: extruders / models processed in std::unordered_map order (tools/difftest/make_resolved_variants.py)
+r_tri_cube           | cube20.stl@2 | @def=tools/difftest/ender3_tri_resolved.json
+r_tri_three          | cube20.stl@0[mesh_position_x=-25] sphere.stl@1 overhang_t.stl@2[mesh_position_x=25] | @def=tools/difftest/ender3_tri_resolved.json
+r_tri_pt             | cube20.stl@0[mesh_position_x=-15] sphere.stl@2[mesh_position_x=15] | @def=tools/difftest/ender3_tri_resolved.json prime_tower_enable=true
+r_models             | - | @def=tools/difftest/ender3_dual_models_resolved.json
+r_models_extra       | tube.stl[mesh_position_y=-30] | @def=tools/difftest/ender3_dual_models_resolved.json

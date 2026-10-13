@@ -1,0 +1,54 @@
+name: Bug report
+description: Something doesn't work, or the G-code differs from Cura's
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Curust version
+      description: Menu > About Curust, or `curust-cli --version`
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+        - macOS
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: download
+    attributes:
+      label: How did you get Curust?
+      options:
+        - curust-installer.exe
+        - curust-standalone.exe
+        - Built from source
+    validations:
+      required: true
+  - type: input
+    id: printer
+    attributes:
+      label: Printer, nozzle, material and profile
+      placeholder: "Creality Ender-3, 0.4 mm, Generic PLA, Standard Quality 0.2 mm"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you got instead. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Files
+      description: |
+        For slicing problems, attach the scene (menu > Export scene as 3MF). If you can, also attach
+        the G-code Cura 5.12 makes from the same models and settings, and Curust's G-code. Zip them
+        first, since GitHub doesn't accept .gcode attachments.

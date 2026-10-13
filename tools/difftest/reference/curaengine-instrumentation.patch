@@ -1,0 +1,710 @@
+--- CuraEngine/src/Application.cpp
++++ refbuild/src/Application.cpp
+@@ -24,13 +24,14 @@
+ #include "communication/EmscriptenCommunication.h" // To use Emscripten to slice stuff.
+ #include "progress/Progress.h"
+ #include "utils/ThreadPool.h"
++#include <cstdlib>
+ #include "utils/string.h" //For stringcasecompare.
+ 
+ namespace cura
+ {
+ 
+ Application::Application()
+-    : instance_uuid_(boost::uuids::to_string(boost::uuids::random_generator()()))
++    : instance_uuid_(std::getenv("CURA_FIXED_UUID") ? std::string(std::getenv("CURA_FIXED_UUID")) : boost::uuids::to_string(boost::uuids::random_generator()())) // curaport: deterministic UUID for testing
+ {
+     auto dup_sink = std::make_shared<spdlog::sinks::dup_filter_sink_mt>(std::chrono::seconds{ 10 });
+     auto base_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+--- CuraEngine/src/FffPolygonGenerator.cpp
++++ refbuild/src/FffPolygonGenerator.cpp
+@@ -15,6 +15,7 @@
+ #include "ConicalOverhang.h"
+ #include "ExtruderTrain.h"
+ #include "FffPolygonGenerator.h"
++#include "dbgdump.h"
+ #include "infill.h"
+ #include "InterlockingGenerator.h"
+ #include "layerPart.h"
+@@ -56,6 +57,140 @@
+ #include "utils/Simplify.h"
+ // clang-format on
+ 
++
++namespace
++{
++void curaportDumpSupport(const cura::SliceDataStorage& storage, const char* tag, bool with_infill)
++{
++    using namespace cura;
++    if (! dbg::enabled())
++    {
++        return;
++    }
++    if (! with_infill)
++    {
++        for (size_t mesh_idx = 0; mesh_idx < storage.meshes.size(); mesh_idx++)
++        {
++            const SliceMeshStorage& mesh = *storage.meshes[mesh_idx];
++            for (size_t layer_idx = 0; layer_idx < mesh.overhang_areas.size(); layer_idx++)
++            {
++                std::ostringstream ss;
++                ss << "overhang mesh=" << mesh_idx << " layer=" << layer_idx << "\n";
++                ss << " overhang\n" << dbg::shapeStr(mesh.overhang_areas[layer_idx]);
++                if (layer_idx < mesh.full_overhang_areas.size())
++                {
++                    ss << " full_overhang\n" << dbg::shapeStr(mesh.full_overhang_areas[layer_idx]);
++                }
++                dbg::write(ss.str());
++            }
++        }
++    }
++    {
++        std::ostringstream ss;
++        ss << tag << " mesh=-1 layer=-1 generated=" << int(storage.support.generated) << " max_filled=" << storage.support.layer_nr_max_filled_layer
++           << " nlayers=" << storage.support.supportLayers.size() << "\n";
++        dbg::write(ss.str());
++    }
++    for (size_t layer_idx = 0; layer_idx < storage.support.supportLayers.size(); layer_idx++)
++    {
++        const SupportLayer& layer = storage.support.supportLayers[layer_idx];
++        std::ostringstream ss;
++        ss << tag << " mesh=-1 layer=" << layer_idx << " nparts=" << layer.support_infill_parts.size() << "\n";
++        for (const SupportInfillPart& part : layer.support_infill_parts)
++        {
++            ss << " part w=" << part.support_line_width_ << " insets=" << part.inset_count_to_generate_ << " cld=" << part.custom_line_distance_
++               << " frac=" << int(part.use_fractional_config_) << " bb=" << part.outline_boundary_box_.min_.X << "," << part.outline_boundary_box_.min_.Y << ","
++               << part.outline_boundary_box_.max_.X << "," << part.outline_boundary_box_.max_.Y << "\n";
++            ss << " outline\n" << dbg::shapeStr(part.outline_);
++            if (with_infill)
++            {
++                for (size_t d = 0; d < part.infill_area_per_combine_per_density_.size(); d++)
++                {
++                    for (size_t c = 0; c < part.infill_area_per_combine_per_density_[d].size(); c++)
++                    {
++                        ss << " infill d=" << d << " c=" << c << "\n" << dbg::shapeStr(part.infill_area_per_combine_per_density_[d][c]);
++                    }
++                }
++                ss << " toolpaths\n" << dbg::toolpathsStr(part.wall_toolpaths_);
++            }
++        }
++        ss << " bottom\n" << dbg::shapeStr(layer.support_bottom);
++        ss << " roof\n" << dbg::shapeStr(layer.support_roof);
++        ss << " fractional_roof\n" << dbg::shapeStr(layer.support_fractional_roof);
++        ss << " mesh_drop_down\n" << dbg::shapeStr(layer.support_mesh_drop_down);
++        ss << " support_mesh\n" << dbg::shapeStr(layer.support_mesh);
++        ss << " anti_overhang\n" << dbg::shapeStr(layer.anti_overhang);
++        dbg::write(ss.str());
++    }
++}
++
++void curaportDumpAdhesion(const cura::SliceDataStorage& storage)
++{
++    using namespace cura;
++    if (! dbg::enabled())
++    {
++        return;
++    }
++    auto linesStr = [](const auto& lines)
++    {
++        std::ostringstream ss;
++        for (const auto& line : lines)
++        {
++            ss << "  line " << line.size() << ":";
++            for (const Point2LL& p : line)
++            {
++                ss << " " << p.X << "," << p.Y;
++            }
++            ss << "\n";
++        }
++        return ss.str();
++    };
++    for (size_t extruder_nr = 0; extruder_nr < MAX_EXTRUDERS; extruder_nr++)
++    {
++        for (size_t inset_idx = 0; inset_idx < storage.skirt_brim[extruder_nr].size(); inset_idx++)
++        {
++            std::ostringstream ss;
++            ss << "adhesion mesh=" << extruder_nr << " layer=" << inset_idx << " n=" << storage.skirt_brim[extruder_nr][inset_idx].size() << "\n";
++            for (const PolylinePtr& line : storage.skirt_brim[extruder_nr][inset_idx])
++            {
++                char t = 'O';
++                if (std::dynamic_pointer_cast<const Polygon>(line))
++                {
++                    t = 'P';
++                }
++                else if (const auto closed = std::dynamic_pointer_cast<const ClosedPolyline>(line))
++                {
++                    t = closed->isExplicitlyClosed() ? 'C' : 'c';
++                }
++                ss << "  " << t << " " << line->size() << ":";
++                for (const Point2LL& p : *line)
++                {
++                    ss << " " << p.X << "," << p.Y;
++                }
++                ss << "\n";
++            }
++            dbg::write(ss.str());
++        }
++    }
++    {
++        std::ostringstream ss;
++        ss << "adhesion mesh=-1 layer=-1\n";
++        ss << " support_brim\n" << linesStr(storage.support_brim);
++        ss << " raft_base\n" << dbg::shapeStr(storage.raft_base_outline);
++        ss << " raft_interface\n" << dbg::shapeStr(storage.raft_interface_outline);
++        ss << " raft_surface\n" << dbg::shapeStr(storage.raft_surface_outline);
++        ss << " draft_shield\n" << dbg::shapeStr(storage.draft_protection_shield);
++        dbg::write(ss.str());
++    }
++    for (size_t layer_idx = 0; layer_idx < storage.ooze_shield.size(); layer_idx++)
++    {
++        std::ostringstream ss;
++        ss << "adhesion mesh=-2 layer=" << layer_idx << "\n" << dbg::shapeStr(storage.ooze_shield[layer_idx]);
++        dbg::write(ss.str());
++    }
++}
++} // namespace
++
+ namespace cura
+ {
+ 
+@@ -345,6 +480,25 @@
+ 
+         Progress::messageProgress(Progress::Stage::PARTS, meshIdx + 1, slicerList.size());
+     }
++
++    if (dbg::enabled())
++    {
++        for (size_t mesh_idx = 0; mesh_idx < storage.meshes.size(); mesh_idx++)
++        {
++            const SliceMeshStorage& mesh = *storage.meshes[mesh_idx];
++            for (size_t layer_nr = 0; layer_nr < mesh.layers.size(); layer_nr++)
++            {
++                const SliceLayer& layer = mesh.layers[layer_nr];
++                std::string out = "parts mesh=" + std::to_string(mesh_idx) + " layer=" + std::to_string(layer_nr) + " z=" + std::to_string(layer.printZ)
++                                + " thickness=" + std::to_string(layer.thickness) + " nparts=" + std::to_string(layer.parts.size()) + "\n";
++                for (const SliceLayerPart& part : layer.parts)
++                {
++                    out += dbg::shapeStr(part.outline);
++                }
++                dbg::write(out);
++            }
++        }
++    }
+     return true;
+ }
+ 
+@@ -414,6 +568,7 @@
+     AreaSupport::generateSupportAreas(storage);
+     TreeSupport tree_support_generator(storage);
+     tree_support_generator.generateSupportAreas(storage);
++    curaportDumpSupport(storage, "support", false);
+ 
+     computePrintHeightStatistics(storage);
+ 
+@@ -433,6 +588,7 @@
+         spdlog::debug("Processing platform adhesion");
+         processPlatformAdhesion(storage);
+     }
++    curaportDumpAdhesion(storage);
+ 
+     spdlog::debug("Meshes post-processing");
+     // meshes post processing
+@@ -444,6 +600,7 @@
+     spdlog::debug("Processing gradual support");
+     // generate gradual support
+     AreaSupport::generateSupportInfillFeatures(storage);
++    curaportDumpSupport(storage, "suppinfill", true);
+ }
+ 
+ void FffPolygonGenerator::processBasicWallsSkinInfill(
+@@ -507,6 +664,23 @@
+             guarded_progress++;
+         });
+ 
++    if (dbg::enabled())
++    {
++        for (size_t layer_nr = 0; layer_nr < mesh.layers.size(); layer_nr++)
++        {
++            const SliceLayer& layer = mesh.layers[layer_nr];
++            std::ostringstream ss;
++            ss << "walls mesh=" << mesh_idx << " layer=" << layer_nr << " nparts=" << layer.parts.size() << "\n";
++            for (const SliceLayerPart& part : layer.parts)
++            {
++                ss << " outline\n" << dbg::shapeStr(part.outline);
++                ss << " inner_area\n" << dbg::shapeStr(part.inner_area);
++                ss << " toolpaths\n" << dbg::toolpathsStr(part.wall_toolpaths);
++            }
++            dbg::write(ss.str());
++        }
++    }
++
+     ProgressEstimatorLinear* skin_estimator = new ProgressEstimatorLinear(mesh_layer_count);
+     mesh_inset_skin_progress_estimator->nextStage(skin_estimator);
+ 
+@@ -552,6 +726,38 @@
+             }
+             guarded_progress++;
+         });
++
++    if (dbg::enabled())
++    {
++        for (size_t layer_nr = 0; layer_nr < mesh.layers.size(); layer_nr++)
++        {
++            const SliceLayer& layer = mesh.layers[layer_nr];
++            std::ostringstream ss;
++            ss << "skin mesh=" << mesh_idx << " layer=" << layer_nr << " nparts=" << layer.parts.size() << "\n";
++            for (const SliceLayerPart& part : layer.parts)
++            {
++                ss << " infill_area\n" << dbg::shapeStr(part.infill_area);
++                ss << " infill_area_own " << (part.infill_area_own ? 1 : 0) << "\n";
++                if (part.infill_area_own)
++                {
++                    ss << dbg::shapeStr(*part.infill_area_own);
++                }
++                ss << " top_most_surface\n" << dbg::shapeStr(part.top_most_surface);
++                ss << " bottom_most_surface\n" << dbg::shapeStr(part.bottom_most_surface);
++                ss << " nskin=" << part.skin_parts.size() << "\n";
++                for (const SkinPart& sp : part.skin_parts)
++                {
++                    ss << " skin outline\n" << dbg::shapeStr(sp.outline);
++                    ss << " skin_fill\n" << dbg::shapeStr(sp.skin_fill);
++                    ss << " roofing_fill\n" << dbg::shapeStr(sp.roofing_fill);
++                    ss << " flooring_fill\n" << dbg::shapeStr(sp.flooring_fill);
++                }
++            }
++            ss << " top_surface\n" << dbg::shapeStr(layer.top_surface.areas);
++            ss << " bottom_surface\n" << dbg::shapeStr(layer.bottom_surface);
++            dbg::write(ss.str());
++        }
++    }
+ }
+ 
+ void FffPolygonGenerator::processInfillMesh(SliceDataStorage& storage, const size_t mesh_order_idx, const std::vector<size_t>& mesh_order)
+--- CuraEngine/src/InsetOrderOptimizer.cpp
++++ refbuild/src/InsetOrderOptimizer.cpp
+@@ -358,7 +358,11 @@
+         // go through all the invariant parents and see if they are inside the hole polygon
+         // if they are, then that means we have found a child for this extrusion line
+         std::vector<const ExtrusionLine*> removed_parent_invariants;
+-        for (const ExtrusionLine* invariant_parent : invariant_outer_parents)
++        // curaport: iterating an unordered_set of pointers is address dependent, and the insertion order into the
++        // graph determines the dfs traversal order. Iterate in a deterministic order (position in the input vector).
++        std::vector<const ExtrusionLine*> sorted_invariant_outer_parents(invariant_outer_parents.begin(), invariant_outer_parents.end());
++        std::sort(sorted_invariant_outer_parents.begin(), sorted_invariant_outer_parents.end());
++        for (const ExtrusionLine* invariant_parent : sorted_invariant_outer_parents)
+         {
+             if (hole_polygons.inside(invariant_parent->junctions_[0].p_, false))
+             {
+--- CuraEngine/src/PathOrderMonotonic.cpp
++++ refbuild/src/PathOrderMonotonic.cpp
+@@ -369,7 +369,11 @@
+ 
+     // Pre-order lines in a multi-map, so that aligned lines will end up in the same bucket and we can process them in a row
+     std::multimap<LineProjections, Path*> pre_ordered_lines;
+-    for (Path* starting_line : starting_lines)
++    // curaport: iterating an unordered_set of pointers is address dependent; equal keys in the multimap keep
++    // insertion order, so insert the starting lines in a deterministic order (their position in paths_).
++    std::vector<Path*> sorted_starting_lines(starting_lines.begin(), starting_lines.end());
++    std::sort(sorted_starting_lines.begin(), sorted_starting_lines.end());
++    for (Path* starting_line : sorted_starting_lines)
+     {
+         pre_ordered_lines.insert(std::make_pair(LineProjections(starting_line, monotonic_vector_), starting_line));
+     }
+--- CuraEngine/src/TreeSupport.cpp
++++ refbuild/src/TreeSupport.cpp
+@@ -4,6 +4,7 @@
+ #include "TreeSupport.h"
+ 
+ #include <chrono>
++#include <cstdlib>
+ #include <fstream>
+ #include <optional>
+ #include <stdio.h>
+@@ -31,6 +32,51 @@
+ #include "utils/math.h" //For round_up_divide and PI.
+ #include "utils/polygonUtils.h" //For moveInside.
+ #include "utils/section_type.h"
++#include "dbgdump.h"
++
++namespace
++{
++// curaport debug dump
++void dbgDumpMoveBounds(const char* tag, const std::vector<std::set<cura::TreeSupportElement*>>& move_bounds)
++{
++    if (! cura::dbg::enabled())
++        return;
++    std::ostringstream ss;
++    for (size_t layer = 0; layer < move_bounds.size(); layer++)
++    {
++        if (move_bounds[layer].empty())
++            continue;
++        ss << "tree_" << tag << " mesh=0 layer=" << layer << " n=" << move_bounds[layer].size() << "\n";
++        for (const cura::TreeSupportElement* e : move_bounds[layer])
++        {
++            char buf[512];
++            snprintf(buf, sizeof(buf), "  elem th=%lld tp=%lld,%lld np=%lld,%lld nh=%lld erh=%zu dtt=%zu bp=%d grac=%d res=%lld,%lld bri=%.17g umin=%d sroof=%d dmu=%zu safe=%d miss=%zu skipov=%d par=%zu itmr=%lld lim=%d,%lld last=%d,%lld,%d,%d,%d,%d tips=%zu ovt=%zu\n",
++                (long long)e->target_height_.value, (long long)e->target_position_.X, (long long)e->target_position_.Y, (long long)e->next_position_.X, (long long)e->next_position_.Y,
++                (long long)e->next_height_.value, e->effective_radius_height_, e->distance_to_top_, int(e->to_buildplate_), int(e->to_model_gracious_), (long long)e->result_on_layer_.X,
++                (long long)e->result_on_layer_.Y, e->buildplate_radius_increases_, int(e->use_min_xy_dist_), int(e->supports_roof_), e->dont_move_until_, int(e->can_use_safe_radius_),
++                e->missing_roof_layers_, int(e->skip_ovalisation_), e->parents_.size(), (long long)e->increased_to_model_radius_, int(e->influence_area_limit_active_),
++                (long long)e->influence_area_limit_range_, int(e->last_area_increase_.type_), (long long)e->last_area_increase_.increase_speed_, int(e->last_area_increase_.increase_radius_),
++                int(e->last_area_increase_.no_error_), int(e->last_area_increase_.use_min_distance_), int(e->last_area_increase_.move_), e->all_tips_.size(), e->additional_ovalization_targets_.size());
++            ss << buf;
++            ss << cura::dbg::shapeStr(*e->area_);
++        }
++    }
++    cura::dbg::write(ss.str());
++}
++void dbgDumpLayers(const char* tag, const std::vector<cura::Shape>& layers)
++{
++    if (! cura::dbg::enabled())
++        return;
++    std::ostringstream ss;
++    for (size_t layer = 0; layer < layers.size(); layer++)
++    {
++        if (layers[layer].empty())
++            continue;
++        ss << "tree_" << tag << " mesh=0 layer=" << layer << "\n" << cura::dbg::shapeStr(layers[layer]);
++    }
++    cura::dbg::write(ss.str());
++}
++} // namespace
+ 
+ namespace cura
+ {
+@@ -168,14 +214,17 @@
+         {
+             generateInitialAreas(*storage.meshes[mesh_idx], move_bounds, storage);
+         }
++        dbgDumpMoveBounds("tips", move_bounds);
+         const auto t_gen = std::chrono::high_resolution_clock::now();
+ 
+         // ### Propagate the influence areas downwards.
+         createLayerPathing(move_bounds);
++        dbgDumpMoveBounds("paths", move_bounds);
+         const auto t_path = std::chrono::high_resolution_clock::now();
+ 
+         // ### Set a point in each influence area
+         createNodesFromArea(move_bounds);
++        dbgDumpMoveBounds("nodes", move_bounds);
+         const auto t_place = std::chrono::high_resolution_clock::now();
+ 
+         // ### draw these points as circles
+@@ -504,7 +553,7 @@
+      */
+ 
+     const size_t input_size = influence_areas.size();
+-    size_t num_threads = std::max(size_t(1), size_t(std::thread::hardware_concurrency())); // For some reason hardware concurrency can return 0;
++    size_t num_threads = std::max(size_t(1), size_t(getenv("CURA_HW_CONCURRENCY") ? std::atoi(getenv("CURA_HW_CONCURRENCY")) : std::thread::hardware_concurrency())); // DETERMINISM PATCH (curaport): overridable; // For some reason hardware concurrency can return 0;
+ 
+     if (input_size == 0)
+     {
+@@ -1251,7 +1300,7 @@
+                     if (bypass_merge)
+                     {
+                         Shape* new_area = new Shape(max_influence_area);
+-                        TreeSupportElement* next = new TreeSupportElement(elem, new_area);
++                        TreeSupportElement* next = assignTreeSupportElementSerial(new TreeSupportElement(elem, new_area));
+                         bypass_merge_areas.emplace_back(next);
+                     }
+                     else
+@@ -1351,7 +1400,7 @@
+         {
+             const TreeSupportElement elem = tup.first;
+             Shape* new_area = new Shape(TreeSupportUtils::safeUnion(tup.second));
+-            TreeSupportElement* next = new TreeSupportElement(elem, new_area);
++            TreeSupportElement* next = assignTreeSupportElementSerial(new TreeSupportElement(elem, new_area));
+             move_bounds[layer_idx - 1].emplace(next);
+ 
+             if (new_area->area() < 1)
+@@ -1549,7 +1598,7 @@
+ {
+     // Initialize points on layer 0, with a "random" point in the influence area. Point is chosen based on an inaccurate estimate where the branches will split into two, but every
+     // point inside the influence area would produce a valid result.
+-    std::unordered_set<TreeSupportElement*> remove;
++    std::set<TreeSupportElement*> remove;
+     for (TreeSupportElement* init : move_bounds[0])
+     {
+         Point2LL p = init->next_position_;
+@@ -1642,7 +1691,7 @@
+ 
+ void TreeSupport::generateBranchAreas(
+     std::vector<std::pair<LayerIndex, TreeSupportElement*>>& linear_data,
+-    std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons,
++    std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons,
+     const std::map<TreeSupportElement*, TreeSupportElement*>& inverse_tree_order)
+ {
+     double progress_total = TREE_PROGRESS_PRECALC_AVO + TREE_PROGRESS_PRECALC_COLL + TREE_PROGRESS_GENERATE_NODES + TREE_PROGRESS_AREA_CALC;
+@@ -1792,6 +1841,23 @@
+             }
+         });
+ 
++    if (cura::dbg::enabled())
++    {
++        std::ostringstream ss;
++        for (size_t i = 0; i < linear_data.size(); i++)
++        {
++            TreeSupportElement* elem = linear_data[i].second;
++            TreeSupportElement* child_elem = inverse_tree_order.count(elem) ? inverse_tree_order.at(elem) : nullptr;
++            ss << "tree_branch mesh=0 layer=" << linear_data[i].first << " th=" << elem->target_height_.value << " tp=" << elem->target_position_.X << "," << elem->target_position_.Y
++               << " res=" << elem->result_on_layer_.X << "," << elem->result_on_layer_.Y << " r=" << config.getRadius(*elem) << " child=" << (child_elem ? 1 : 0);
++            if (child_elem)
++                ss << " cres=" << child_elem->result_on_layer_.X << "," << child_elem->result_on_layer_.Y;
++            for (TreeSupportElement* parent : elem->parents_)
++                ss << " pres=" << parent->result_on_layer_.X << "," << parent->result_on_layer_.Y << "," << config.getRadius(*parent);
++            ss << "\n" << cura::dbg::shapeStr(linear_inserts[i]);
++        }
++        cura::dbg::write(ss.str());
++    }
+     // Single threaded combining all elements to the right layers. Only copies data!
+     for (const coord_t i : ranges::views::iota(0UL, linear_data.size()))
+     {
+@@ -1799,7 +1865,7 @@
+     }
+ }
+ 
+-void TreeSupport::smoothBranchAreas(std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons)
++void TreeSupport::smoothBranchAreas(std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons)
+ {
+     double progress_total = TREE_PROGRESS_PRECALC_AVO + TREE_PROGRESS_PRECALC_COLL + TREE_PROGRESS_GENERATE_NODES + TREE_PROGRESS_AREA_CALC + TREE_PROGRESS_GENERATE_BRANCH_AREAS;
+     const coord_t max_radius_change_per_layer = 1 + config.support_line_width / 2; // This is the upper limit a radius may change per layer. +1 to avoid rounding errors.
+@@ -1860,7 +1926,7 @@
+     //     As the whole function is only 10%, and the smoothing is hard to predict a progress report in the loop may be not useful.
+ 
+     // Smooth downwards.
+-    std::unordered_set<TreeSupportElement*> updated_last_iteration;
++    std::set<TreeSupportElement*> updated_last_iteration;
+     for (const auto layer_idx : ranges::views::iota(0UL, std::max<size_t>(layer_tree_polygons.size(), 1UL) - 1UL) | ranges::views::reverse)
+     {
+         std::vector<std::pair<TreeSupportElement*, Shape>> processing;
+@@ -1921,7 +1987,7 @@
+ }
+ 
+ void TreeSupport::dropNonGraciousAreas(
+-    std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons,
++    std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons,
+     const std::vector<std::pair<LayerIndex, TreeSupportElement*>>& linear_data,
+     std::vector<std::vector<std::pair<LayerIndex, Shape>>>& dropped_down_areas,
+     const std::map<TreeSupportElement*, TreeSupportElement*>& inverse_tree_order)
+@@ -2342,7 +2408,7 @@
+ 
+ 
+     // Reorder the processed data by layers again. The map also could be a vector<pair<SupportElement*,Shape>>:
+-    std::vector<std::unordered_map<TreeSupportElement*, Shape>> layer_tree_polygons(move_bounds.size());
++    std::vector<std::map<TreeSupportElement*, Shape>> layer_tree_polygons(move_bounds.size());
+     const auto t_start = std::chrono::high_resolution_clock::now();
+ 
+     // Generate the circles that will be the branches.
+@@ -2436,7 +2502,10 @@
+         scripta::log("tree_support_layer_storage", support_layer_storage[layer_idx], SectionType::SUPPORT, layer_idx);
+     }
+ 
++    dbgDumpLayers("prefilter", support_layer_storage);
++    dbgDumpLayers("roofstore", support_roof_storage);
+     filterFloatingLines(support_layer_storage);
++    dbgDumpLayers("postfilter", support_layer_storage);
+     const auto t_filter = std::chrono::high_resolution_clock::now();
+ 
+     finalizeInterfaceAndSupportAreas(support_layer_storage, support_roof_storage, support_layer_storage_fractional, storage);
+--- CuraEngine/src/TreeSupportTipGenerator.cpp
++++ refbuild/src/TreeSupportTipGenerator.cpp
+@@ -668,6 +668,7 @@
+                 skip_ovalisation,
+                 support_tree_limit_branch_reach_,
+                 support_tree_branch_reach_limit_);
++            assignTreeSupportElementSerial(elem); // DETERMINISM PATCH (curaport)
+             elem->area_ = new Shape(area);
+ 
+             for (Point2LL target : additional_ovalization_targets)
+--- CuraEngine/src/arachne/SkeletalTrapezoidation.cpp
++++ refbuild/src/arachne/SkeletalTrapezoidation.cpp
+@@ -2064,19 +2064,26 @@
+ void SkeletalTrapezoidation::connectJunctions(ptr_vector_t<LineJunctions>& edge_junctions)
+ {
+     std::unordered_set<edge_t*> unprocessed_quad_starts(graph_.edges_.size() * 5 / 2);
++    std::vector<edge_t*> curaport_quad_start_order; // CURAPORT: deterministic (graph order) instead of address-hash order
+     for (edge_t& edge : graph_.edges_)
+     {
+         if (! edge.prev_)
+         {
+             unprocessed_quad_starts.insert(&edge);
++            curaport_quad_start_order.push_back(&edge);
+         }
+     }
+ 
+     std::unordered_set<edge_t*> passed_odd_edges;
++    size_t curaport_order_idx = 0;
+ 
+     while (! unprocessed_quad_starts.empty())
+     {
+-        edge_t* poly_domain_start = *unprocessed_quad_starts.begin();
++        while (unprocessed_quad_starts.count(curaport_quad_start_order[curaport_order_idx]) == 0)
++        {
++            curaport_order_idx++;
++        }
++        edge_t* poly_domain_start = curaport_quad_start_order[curaport_order_idx];
+         edge_t* quad_start = poly_domain_start;
+         bool new_domain_start = true;
+         do
+--- CuraEngine/include/PathOrderOptimizer.h
++++ refbuild/include/PathOrderOptimizer.h
+@@ -608,6 +608,9 @@
+         {
+             candidate_orderable_paths.push_back(vertices_to_paths_.at(path));
+         }
++        // curaport: iteration order of an unordered_set of pointers depends on memory addresses, which makes
++        // tie-breaking between equally close paths nondeterministic. Order the candidates by their position in paths_.
++        std::sort(candidate_orderable_paths.begin(), candidate_orderable_paths.end());
+ 
+         OrderablePath* best_candidate = findClosestPath(start_position, candidate_orderable_paths);
+         return best_candidate->vertices_;
+--- CuraEngine/include/TreeSupport.h
++++ refbuild/include/TreeSupport.h
+@@ -262,7 +262,7 @@
+      */
+     void generateBranchAreas(
+         std::vector<std::pair<LayerIndex, TreeSupportElement*>>& linear_data,
+-        std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons,
++        std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons,
+         const std::map<TreeSupportElement*, TreeSupportElement*>& inverse_tree_order);
+ 
+     /*!
+@@ -270,7 +270,7 @@
+      *
+      * \param layer_tree_polygons[in,out] Resulting branch areas with the layerindex they appear on.
+      */
+-    void smoothBranchAreas(std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons);
++    void smoothBranchAreas(std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons);
+ 
+     /*!
+      * \brief Drop down areas that do rest non-gracefully on the model to ensure the branch actually rests on something.
+@@ -281,7 +281,7 @@
+      * \param inverse_tree_order[in] A mapping that returns the child of every influence area.
+      */
+     void dropNonGraciousAreas(
+-        std::vector<std::unordered_map<TreeSupportElement*, Shape>>& layer_tree_polygons,
++        std::vector<std::map<TreeSupportElement*, Shape>>& layer_tree_polygons,
+         const std::vector<std::pair<LayerIndex, TreeSupportElement*>>& linear_data,
+         std::vector<std::vector<std::pair<LayerIndex, Shape>>>& dropped_down_areas,
+         const std::map<TreeSupportElement*, TreeSupportElement*>& inverse_tree_order);
+--- CuraEngine/include/TreeSupportElement.h
++++ refbuild/include/TreeSupportElement.h
+@@ -2,6 +2,7 @@
+ #ifndef TREESUPPORTELEMENT_H
+ #define TREESUPPORTELEMENT_H
+ 
++#include <functional>
+ #include <map>
+ #include <unordered_map>
+ 
+@@ -358,6 +359,10 @@
+      */
+     std::vector<Point2LL> additional_ovalization_targets_;
+ 
++    // DETERMINISM PATCH (curaport): allocation serial, assigned at every `new TreeSupportElement` site.
++    // Pointer-keyed containers order by it instead of by heap address.
++    size_t serial_ = 0;
++
+ 
+     bool operator==(const TreeSupportElement& other) const
+     {
+@@ -440,10 +445,29 @@
+     }
+ };
+ 
++// DETERMINISM PATCH (curaport)
++inline size_t tree_support_element_serial_counter = 0;
++inline TreeSupportElement* assignTreeSupportElementSerial(TreeSupportElement* elem)
++{
++    elem->serial_ = ++tree_support_element_serial_counter;
++    return elem;
++}
+ } // namespace cura
+ 
+ namespace std
+ {
++template<>
++struct less<cura::TreeSupportElement*>
++{
++    bool operator()(const cura::TreeSupportElement* a, const cura::TreeSupportElement* b) const
++    {
++        return a->serial_ < b->serial_;
++    }
++};
++} // namespace std
++
++namespace std
++{
+ template<>
+ struct hash<cura::TreeSupportElement>
+ {
+--- CuraEngine/include/dbgdump.h
++++ refbuild/include/dbgdump.h
+@@ -0,0 +1,67 @@
++// Debug dumps for comparing against the Rust port (enabled by env CURA_DUMP=<file>).
++#pragma once
++#include <cstdio>
++#include <cstdlib>
++#include <mutex>
++#include <sstream>
++#include <string>
++#include "geometry/Shape.h"
++#include "utils/ExtrusionLine.h"
++
++namespace cura::dbg
++{
++inline FILE* sink()
++{
++    static FILE* f = []() -> FILE*
++    {
++        const char* p = std::getenv("CURA_DUMP");
++        return p ? std::fopen(p, "w") : nullptr;
++    }();
++    return f;
++}
++inline bool enabled()
++{
++    return sink() != nullptr;
++}
++inline void write(const std::string& s)
++{
++    static std::mutex m;
++    std::lock_guard<std::mutex> lock(m);
++    if (sink())
++    {
++        std::fwrite(s.data(), 1, s.size(), sink());
++        std::fflush(sink());
++    }
++}
++inline std::string shapeStr(const Shape& shape)
++{
++    std::ostringstream ss;
++    for (const Polygon& poly : shape)
++    {
++        ss << "  poly " << poly.size() << ":";
++        for (const Point2LL& p : poly)
++        {
++            ss << " " << p.X << "," << p.Y;
++        }
++        ss << "\n";
++    }
++    return ss.str();
++}
++inline std::string toolpathsStr(const std::vector<VariableWidthLines>& paths)
++{
++    std::ostringstream ss;
++    for (size_t i = 0; i < paths.size(); i++)
++    {
++        for (const ExtrusionLine& line : paths[i])
++        {
++            ss << "  inset " << i << " line idx=" << line.inset_idx_ << " odd=" << int(line.is_odd_) << " closed=" << int(line.is_closed_) << " n=" << line.junctions_.size() << ":";
++            for (const ExtrusionJunction& j : line.junctions_)
++            {
++                ss << " " << j.p_.X << "," << j.p_.Y << "," << j.w_;
++            }
++            ss << "\n";
++        }
++    }
++    return ss.str();
++}
++} // namespace cura::dbg

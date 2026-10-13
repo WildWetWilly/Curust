@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release --workspace
+      - name: Test
+        run: cargo test --release --workspace
+      - name: Check the web interface scripts
+        if: runner.os == 'Linux'
+        run: |
+          node --check crates/app/web/app.js
+          node --check crates/app/web/viewer.js
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory dist | Out-Null
+          Copy-Item target/release/curust.exe, target/release/curust-cli.exe, target/release/curust-engine.exe, README.md, LICENSE dist/
+      - name: Package (Linux, macOS)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir dist
+          cp target/release/curust target/release/curust-cli target/release/curust-engine README.md LICENSE dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: curust-${{ runner.os }}
+          path: dist/

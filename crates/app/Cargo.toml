@@ -1,0 +1,25 @@
+[package]
+name = "curust"
+description = "Curust: a complete 3D-printing slicer (Cura 5.12 compatible) with a browser-based GUI."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "curust"
+path = "src/lib.rs"
+
+[[bin]]
+name = "curust"
+path = "src/bin/curust.rs"
+doc = false
+
+[[bin]]
+name = "curust-cli"
+path = "src/bin/curust-cli.rs"
+doc = false
+
+[dependencies]
+curust-engine = { path = "../engine" }
+curust-settings = { path = "../settings" }
+curust-pyrt = { path = "../pyrt" }

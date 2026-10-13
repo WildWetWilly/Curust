@@ -1,0 +1,300 @@
+[
+ {
+  "name": "ender_cube",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "ender_brim_user",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/overhang_t.stl",
+    "position": [
+     10,
+     -5
+    ]
+   }
+  ],
+  "global": {
+   "adhesion_type": "brim",
+   "layer_height": 0.12,
+   "infill_sparse_density": 30,
+   "support_enable": true
+  }
+ },
+ {
+  "name": "ender_tree_raft",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/twisted_star.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "global": {
+   "adhesion_type": "raft",
+   "support_enable": true,
+   "support_structure": "tree"
+  }
+ },
+ {
+  "name": "ender_two_models",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/sphere.stl",
+    "position": [
+     -30,
+     0
+    ]
+   },
+   {
+    "file": "tests/models/tube.stl",
+    "position": [
+     30,
+     10
+    ]
+   }
+  ]
+ },
+ {
+  "name": "ender_one_at_a_time",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     -40,
+     0
+    ]
+   },
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     40,
+     0
+    ]
+   }
+  ],
+  "global": {
+   "print_sequence": "one_at_a_time"
+  }
+ },
+ {
+  "name": "ender_perobject",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ],
+    "settings": {
+     "wall_line_count": 4,
+     "infill_pattern": "gyroid"
+    }
+   },
+   {
+    "file": "tests/models/sphere.stl",
+    "position": [
+     0,
+     0
+    ],
+    "settings": {
+     "infill_mesh": true,
+     "infill_sparse_density": 90
+    }
+   }
+  ]
+ },
+ {
+  "name": "ender_gcode_cond",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "global": {
+   "machine_start_gcode": "G28\n{if material_bed_temperature > 55}M190 S{material_bed_temperature}\n{else}M140 S0\n{endif}\nM104 S{material_print_temperature, 0}\n;{print_time} {filament_amount} {filament_weight} {jobname}\n",
+   "machine_end_gcode": "M84 ;{filament_cost}\n"
+  }
+ },
+ {
+  "name": "ender_draft_petg",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/blob.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "quality_type": "draft",
+  "extruders": {
+   "0": {
+    "material": "generic_petg_175"
+   }
+  }
+ },
+ {
+  "name": "s5_default",
+  "machine": "ultimaker_s5",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "s5_dual_pva",
+  "machine": "ultimaker_s5",
+  "models": [
+   {
+    "file": "tests/models/overhang_t.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "extruders": {
+   "1": {
+    "variant": "BB 0.4",
+    "material": "ultimaker_pva_natural"
+   }
+  },
+  "global": {
+   "support_enable": true,
+   "support_extruder_nr": 1
+  }
+ },
+ {
+  "name": "s5_two_extruders",
+  "machine": "ultimaker_s5",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     -30,
+     0
+    ]
+   },
+   {
+    "file": "tests/models/sphere.stl",
+    "position": [
+     30,
+     0
+    ],
+    "extruder": 1
+   }
+  ],
+  "extruders": {
+   "1": {
+    "material": "generic_abs"
+   }
+  }
+ },
+ {
+  "name": "um3_engineering",
+  "machine": "ultimaker3",
+  "models": [
+   {
+    "file": "tests/models/torus_flat.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "intent": "engineering"
+ },
+ {
+  "name": "um2plus",
+  "machine": "ultimaker2_plus",
+  "models": [
+   {
+    "file": "tests/models/cube20.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "mk3",
+  "machine": "prusa_i3_mk3",
+  "models": [
+   {
+    "file": "tests/models/torus_standing.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ {
+  "name": "anycubic_skirt",
+  "machine": "anycubic_i3_mega",
+  "models": [
+   {
+    "file": "tests/models/thin_walls.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "global": {
+   "adhesion_type": "skirt",
+   "skirt_line_count": 3,
+   "machine_time_estimation_factor": 80
+  }
+ },
+ {
+  "name": "ender_ext_user",
+  "machine": "creality_ender3",
+  "models": [
+   {
+    "file": "tests/models/open_box.stl",
+    "position": [
+     0,
+     0
+    ]
+   }
+  ],
+  "extruders": {
+   "0": {
+    "user": {
+     "material_print_temperature": 215,
+     "speed_wall": "=speed_print / 3"
+    }
+   }
+  }
+ }
+]

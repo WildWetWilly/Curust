@@ -1,0 +1,10 @@
+[
+  {"name": "ender_custom_material", "machine": "creality_ender3",
+   "import_materials": ["tests/materials/silk_pla.xml.fdm_material"],
+   "extruders": {"0": {"material": "silk_pla"}},
+   "models": [{"file": "tests/models/cube20.stl", "position": [0, 0]}]},
+  {"name": "s5_custom_material", "machine": "ultimaker_s5",
+   "import_materials": ["tests/materials/tuned_pla.xml.fdm_material"],
+   "extruders": {"0": {"variant": "AA 0.4", "material": "tuned_pla"}, "1": {"enabled": false}},
+   "models": [{"file": "tests/models/cube20.stl", "position": [0, 0]}]}
+]

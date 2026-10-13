@@ -1,0 +1,9 @@
+[
+  {"name": "image_lithophane_jpg", "machine": "creality_ender3",
+   "models": [{"file": "tests/images/photo.jpg", "position": [0, 0], "image": {}}]},
+  {"name": "image_heightmap_png", "machine": "creality_ender3",
+   "models": [{"file": "tests/images/heightmap.png", "position": [0, 0],
+               "image": {"size": 80, "peak": 3.0, "base": 1.0, "smoothing": 3, "lighter_is_higher": true, "transparency": false}}]},
+  {"name": "image_gif_alpha", "machine": "creality_ender3",
+   "models": [{"file": "tests/images/logo.gif", "position": [0, 0], "image": {"size": 60, "peak": 2.0, "base": 0.6, "smoothing": 0}}]}
+]

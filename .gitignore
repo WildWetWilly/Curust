@@ -1,0 +1,12 @@
+/target
+*.gcode
+/tools/difftest/clipper_driver_cpp
+/tools/difftest/*_cpp
+__pycache__/
+*.pyc
+*.bundle
+/dist
+/gcode_cmp
+/engine_check
+.DS_Store
+Thumbs.db
